@@ -161,8 +161,3 @@ app.get("/addresses/:userId", async (req, res) => {
         res.status(500).json({ message: "Error retrieving the addresses" });
     }
 });
-
-
-
-//  user.addresses.push(address);
-// await user.save();
