@@ -1,18 +1,22 @@
 import React, { useReducer, useEffect, useContext } from 'react';
-import { Text, View, ScrollView, Alert } from 'react-native';
+import { Text, View, ScrollView, Alert, Platform } from 'react-native';
 import Color from '../StyleGuide/Color';
 import { TextInput } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native';
 import { ButtonText } from '../components';
 import { reducer, initialState } from '../Reducer/AddScreenReducer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from "jwt-decode";
+import jwtDecode from "jwt-decode";
 import { UserType } from '../UserContext';
 import axios from 'axios';
 
 const AddressScreen = ({ navigation }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
     const { userId, setUserId } = useContext(UserType);
+
+    function isEnableSignInEmail() {
+        return state.mobileNo != "" && state.houseNo != "" && state.street != "" && state.landmark != "" && state.postalCode != ""
+    }
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -22,7 +26,7 @@ const AddressScreen = ({ navigation }) => {
                     const decodedToken = jwtDecode(token);
                     const userId = decodedToken.userId;
                     setUserId(userId);
-                    console.log(userId)
+                    console.log("Updated userId:", userId);
                 }
             } catch (error) {
                 console.error("Error fetching users:", error);
@@ -30,9 +34,10 @@ const AddressScreen = ({ navigation }) => {
         };
         fetchUsers();
     }, [])
-    console.log(userId)
 
-    const handleAddAddress = () => {
+    console.log("Initial userId:", userId);
+
+    const handleAddAddress = async () => {
         const address = {
             name: state.name,
             mobileNo: state.mobileNo,
@@ -41,28 +46,29 @@ const AddressScreen = ({ navigation }) => {
             landmark: state.landmark,
             postalCode: state.postalCode
         }
-        axios.post("http://192.168.1.190:8000/addresses", { userId, address })
-            .then((response) => {
-                Alert.alert("Success", "Addresses", "added successfully")
-                dispatch({ type: "SET_NAME", payload: state.name })
-                dispatch({ type: "SET_MOBILE_NO", payload: state.mobileNo })
-                dispatch({ type: "SET_HOUSE_NO", payload: state.houseNo })
-                dispatch({ type: "SET_STREET", payload: state.street })
-                dispatch({ type: "SET_LANDMARK", payload: state.landmark })
-                dispatch({ type: "SET_POSTAL_CODE", payload: state.postalCode })
-                setTimeout(() => {
-                    navigation.goBack();
-                }, 500)
-            }).catch((error) => {
-                //Alert.alert("Error", "Failed to add address")
-                console.log("error", error)
-            })
+        try {
+            const response = await axios.post("http://192.168.1.190:8000/addresses", userId, address);
+            console.log(response);
+            Alert.alert("Success", "Addresses", "added successfully")
+            dispatch({ type: "SET_NAME", payload: state.name })
+            dispatch({ type: "SET_MOBILE_NO", payload: state.mobileNo })
+            dispatch({ type: "SET_HOUSE_NO", payload: state.houseNo })
+            dispatch({ type: "SET_STREET", payload: state.street })
+            dispatch({ type: "SET_LANDMARK", payload: state.landmark })
+            dispatch({ type: "SET_POSTAL_CODE", payload: state.postalCode })
+            setTimeout(() => {
+                navigation.goBack();
+            }, 500)
+        } catch (error) {
+            Alert.alert("Error", "Failed to add address")
+            console.log("error", error)
+        }
     }
 
     return (
         <ScrollView showsVerticalScrollIndicator={false}>
             <View style={{ height: 50, backgroundColor: Color.Strong_cyan, }} />
-            <KeyboardAvoidingView enabled={true}>
+            <KeyboardAvoidingView enabled={true} >
                 <View style={{ padding: 10, }}>
                     <Text style={{ fontSize: 17, fontWeight: 'bold', }}>Add a new Address</Text>
                     <TextInput
@@ -176,13 +182,14 @@ const AddressScreen = ({ navigation }) => {
                                 title="Add Address"
                                 onPress={handleAddAddress}
                                 ContainerButton={{
-                                    backgroundColor: Color.Vivid_orange,
+                                    backgroundColor: isEnableSignInEmail() ? Color.Strong_cyan : Color.Red_OP,
                                     padding: 19,
                                     borderRadius: 6,
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     marginTop: 20,
                                 }}
+                                disabled={isEnableSignInEmail() ? false : true}
                                 ContainerText={{
                                     fontWeight: 'bold',
                                 }}

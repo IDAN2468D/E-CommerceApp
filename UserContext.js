@@ -2,7 +2,7 @@ import { createContext, useState } from "react";
 
 const UserType = createContext();
 
-const UserContext = ({ children }) => {
+const UserTypeProvider = ({ children }) => {
     const [userId, setUserId] = useState("");
     return (
         <UserType.Provider value={{ userId, setUserId }}>
@@ -11,4 +11,4 @@ const UserContext = ({ children }) => {
     )
 }
 
-export { UserType, UserContext };
+export { UserType, UserTypeProvider };

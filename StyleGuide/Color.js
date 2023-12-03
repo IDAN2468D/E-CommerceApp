@@ -15,7 +15,8 @@ const Gray_2 = "#b7b7b7";
 const Strong_red = "#c60c30";
 const Very_light_gray = "#E0E0E0";
 const Dark_lime_green = "#008000";
-const Dark_blue = "#0066b2"
+const Dark_blue = "#0066b2";
+const Red_OP = "rgba(255, 0, 0, 0.8)"
 
 export default {
     Blue,
@@ -35,5 +36,6 @@ export default {
     Strong_red,
     Very_light_gray,
     Dark_lime_green,
-    Dark_blue
+    Dark_blue,
+    Red_OP
 }

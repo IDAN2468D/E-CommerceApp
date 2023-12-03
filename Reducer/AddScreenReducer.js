@@ -4,7 +4,8 @@ const initialState = {
     houseNo: "",
     street: "",
     landmark: "",
-    postalCode: ""
+    postalCode: "",
+    mustRegister: "",
 }
 
 const reducer = (state, action) => {
@@ -21,6 +22,8 @@ const reducer = (state, action) => {
             return { ...state, landmark: action.payload }
         case "SET_POSTAL_CODE":
             return { ...state, postalCode: action.payload }
+        case "MUST_REGISTER":
+            return { ...state, mustRegister: !state.mustRegister }
         default:
             return state
     }
